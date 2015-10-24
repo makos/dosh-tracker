@@ -4,6 +4,8 @@ A tool that allows you to record and track your spendings.
 Requires Python 3.x, no other modules required.
 See LICENSE for licensing.
 
+For easier usage, make 'main.py' executable (`chmod +x main.py`) and do `./main.py`.
+
 Config file:
 when running for first time, '.config' file is created in parent directory.
 It contains two variables - 'step' and 'calc_ratios'.
@@ -18,4 +20,4 @@ It's a set of three floats that should sum up to 1.0.
 Any combination is allowed as long as it sums up to 1.0.
 First float is the ratio of living expenses, second one is savings and third one is for luxury items.
 You can use your own config files or edit the default one.
-See 'python3 main.py -h' for details.
+See './main.py -h' for details.

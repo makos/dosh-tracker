@@ -41,7 +41,7 @@ class JSONHandler():
         json_file = open(self.db, 'w')
         json.dump(JSONHandler.json_data, json_file)
         json_file.close()
-        print("JSONHandler: Data dumped into", str(self.db))
+        #print("JSONHandler: Data dumped into", str(self.db))
 
     def clear(self):
         option = input("JSONHandler: Database wipe - do you really want to do this? y/n")

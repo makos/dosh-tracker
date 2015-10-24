@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 # A tool to record expenditures, with crude planning features
@@ -32,6 +33,7 @@ def add_entry():
     entry.append(action)
     entry.append(amount)
     j_handler.dump(entry)
+    print("Entry added.")
 
 def view_entries():
     entries = j_handler.load()
