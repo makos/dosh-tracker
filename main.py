@@ -21,6 +21,7 @@ STEP = 2678400.0 # default cutoff for entry display - one month
 # 1 day in seconds = 86400
 CALC_RATIOS = (0.7, 0.2, 0.1) # ratios used for savings calculator
 # first is living costs, second is savings, third is luxury items (not necessary for living)
+DEFAULTS = [["step", STEP], ["calc_ratios", CALC_RATIOS]]
 
 def add_entry():
     # Entry fields:
@@ -64,26 +65,19 @@ def calculator():
     print("Disposable money for luxury items:", luxury)
 
 def read_config(cfg_file=".config"):
-    global STEP, CALC_RATIOS
-    try:
-        cfg = open(cfg_file, "r")
-        cfg.seek(0)
-        cfg_lines = cfg.read().split()
-        for line in cfg_lines:
-            if "step" in line:
-                STEP = float(cfg_lines[cfg_lines.index(line) + 1])
-            elif "calc_ratios" in line:
-                CALC_RATIOS = (float(cfg_lines[cfg_lines.index(line) + 1]), float(cfg_lines[cfg_lines.index(line) + 2]), float(cfg_lines[cfg_lines.index(line) + 3]))
-        cfg.close()
-    except FileNotFoundError:
-        print("read_config: config file", cfg_file, "not found, creating one with default values.")
-        cfg = open(cfg_file, "w")
-        cfg.write("step " + str(STEP) + "\n")
-        cfg.write("calc_ratios")
-        for x in CALC_RATIOS:
-            cfg.write(' ' + str(x))
-        cfg.close()
-
+    global STEP, CALC_RATIOS, DEFAULTS
+    cfg_handler = JSONHandler(cfg_file)
+    cfg_contents = cfg_handler.load()
+    
+    if cfg_contents == None:
+        cfg_handler.dump(DEFAULTS)
+    else:
+        for level in cfg_contents:
+            for option in level:
+                if option[0] == "step":
+                    STEP = option[1]
+                elif option[0] == "calc_ratios":
+                    CALC_RATIOS = option[1]
 def show_help():
     print("Usage: python3 main.py [JSON file name] [-c -h] [config file name]")
     print("\nProviding JSON and config files is optional, defaults are created automatically.")
@@ -107,10 +101,12 @@ def main():
                 search()
             elif option == 'c':
                 calculator()
-            elif option == 'd':
+            elif option == 'debug':
                 global STEP, CALC_RATIOS
                 print("STEP = ", STEP)
                 print("CALC_RATIOS = ", CALC_RATIOS)
+            elif option == 'clear':
+                j_handler.clear()
             else:
                 pass #XXX
 
@@ -120,11 +116,15 @@ if len(argv) > 1:
         if len(argv) > 2:
             if (argv[2] == "-c") and (len(argv) > 3):
                 read_config(argv[3])
+            else:
+                read_config()
+        else:
+            read_config()
     elif argv[1] == "-h":
         show_help()
     elif (argv[1] == "-c") and (len(argv) > 2):
-        read_config(argv[2])
         j_handler = JSONHandler("db.json")
+        read_config(argv[2])
     else:
         show_help()
 else:
