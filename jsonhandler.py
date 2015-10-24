@@ -11,7 +11,8 @@ class JSONHandler():
     
     Methods:
         load - takes no arguments, decodes JSON and returns it (a list)
-        dump - takes `data` argument"""
+        dump - takes `data` argument (a list), encodes it and saves to file
+        clear - wipes the `db` file"""
 
     json_data = []
     def __init__(self, db):
@@ -50,8 +51,7 @@ class JSONHandler():
             json.dump(JSONHandler.json_data, json_file)
             json_file.close()
             print("JSONHandler: Database erased")
-        else:
-            pass
-if __name__ == '__main__':
-    prog = JSONHandler
-    prog()
+
+# if __name__ == '__main__':
+#     prog = JSONHandler
+#     prog()

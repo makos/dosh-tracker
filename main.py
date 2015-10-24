@@ -10,19 +10,85 @@
 # - ... 
 # - GUI
 
-
 from jsonhandler import JSONHandler
 from sys import argv, exit
 import time
 
-if len(argv) > 1:
-    j_handler = JSONHandler(argv[1])
-else:
-    j_handler = JSONHandler('db.json')
+STEP = 2678400.0 # default cutoff for entry display - one month
+# 31 days in seconds = 2678400
+# 7 days in seconds = 604800
+# 1 day in seconds = 86400
+CALC_RATIOS = (0.7, 0.2, 0.1) # ratios used for savings calculator
+# first is living costs, second is savings, third is luxury items (not necessary for living)
 
-# testing stuff
-# j_handler.dump([1442955507.7310047, 'old shit', 5.55])
-# j_handler.dump([1445633908.7310047, 'new shit', 4.44])
+def add_entry():
+    # Entry fields:
+    # Date - added automatically
+    # Type
+    # Amount spent
+    entry = [time.time()]
+    action = str(input("Type of spending: "))
+    amount = float(input("Amount spent: "))
+    entry.append(action)
+    entry.append(amount)
+    j_handler.dump(entry)
+
+def view_entries():
+    entries = j_handler.load()
+    total = 0
+
+    if entries == None:
+        return "The database is empty."
+    for entry in entries:
+        if (time.time() - STEP) < entry[0]: # if entry is not older than STEP variable (31 days by default), display it
+            print("===========")
+            print(time.ctime(entry[0]))
+            print("Type of expenditure:", entry[1])
+            print("Amount spent:", entry[2])
+            total += entry[2]
+    print("===========\nTotal spent:", total)
+
+def search():
+    pass #XXX
+
+def calculator():
+    global CALC_RATIOS
+    paycheck = float(input("Last paycheck (number): "))
+    living = paycheck * CALC_RATIOS[0]
+    savings = paycheck * CALC_RATIOS[1]
+    luxury = paycheck * CALC_RATIOS[2]
+    print("Money for living (food, rent etc.):", living)
+    print("Money for savings account:", savings)
+    print("Disposable money for luxury items:", luxury)
+
+def read_config(cfg_file=".config"):
+    global STEP, CALC_RATIOS
+    try:
+        cfg = open(cfg_file, "r")
+        cfg.seek(0)
+        cfg_lines = cfg.read().split()
+        for line in cfg_lines:
+            if "step" in line:
+                STEP = float(cfg_lines[cfg_lines.index(line) + 1])
+            elif "calc_ratios" in line:
+                CALC_RATIOS = (float(cfg_lines[cfg_lines.index(line) + 1]), float(cfg_lines[cfg_lines.index(line) + 2]), float(cfg_lines[cfg_lines.index(line) + 3]))
+        cfg.close()
+    except FileNotFoundError:
+        print("read_config: config file", cfg_file, "not found, creating one with default values.")
+        cfg = open(cfg_file, "w")
+        cfg.write("step " + str(STEP) + "\n")
+        cfg.write("calc_ratios")
+        for x in CALC_RATIOS:
+            cfg.write(' ' + str(x))
+        cfg.close()
+
+def show_help():
+    print("Usage: python3 main.py [JSON file name] [-c -h] [config file name]")
+    print("\nProviding JSON and config files is optional, defaults are created automatically.")
+    print("If you provide your own JSON file, it needs to have a .json extension.")
+    print("\nOptions:\n-c\tuse a provided config file, see README for config syntax\n-h\tshow this help")
+    exit()
+
 def main():
     while True:
         option = input("\n(A)dd an entry, (V)iew entries, (S)earch entries, Savings (c)alculator, (Q)uit\n")
@@ -39,43 +105,33 @@ def main():
                 search()
             elif option == 'c':
                 calculator()
+            elif option == 'd':
+                global STEP, CALC_RATIOS
+                print("STEP = ", STEP)
+                print("CALC_RATIOS = ", CALC_RATIOS)
             else:
                 pass #XXX
 
-def add_entry():
-    # Entry fields:
-    # Date - added automatically
-    # Type
-    # Amount spent
-    entry = [time.time()]
-    action = str(input("Type of spending: "))
-    amount = float(input("Amount spent: "))
-    entry.append(action)
-    entry.append(amount)
-    j_handler.dump(entry)
+if len(argv) > 1:
+    if ".json" in argv[1]:
+        j_handler = JSONHandler(argv[1])
+        if len(argv) > 2:
+            if (argv[2] == "-c") and (len(argv) > 3):
+                read_config(argv[3])
+    elif argv[1] == "-h":
+        show_help()
+    elif (argv[1] == "-c") and (len(argv) > 2):
+        read_config(argv[2])
+        j_handler = JSONHandler("db.json")
+    else:
+        show_help()
+else:
+    j_handler = JSONHandler("db.json")
+    read_config()
 
-def view_entries():
-    entries = j_handler.load()
-    if entries == None:
-        return "The database is empty."
-    for entry in entries:
-        if (time.time() - 2678400.0) < entry[0]: # if entry is not older than 31 days, display it
-            print("===========")
-            print(time.ctime(entry[0]))
-            print("Type of expenditure:", entry[1])
-            print("Amount spent:", entry[2])
-    # print(entries)
-    # 31 days in seconds = 2678400
-    # 7 days in seconds = 604800
-    # 1 day in seconds = 86400
-
-
-def search():
-    pass #XXX
-
-def calculator():
-    pass #XXX
-main()
+# testing stuff
+# j_handler.dump([1442955507.7310047, 'old shit', 5.55])
+# j_handler.dump([1445633908.7310047, 'new shit', 4.44])
 # handler = JSONHandler('db.json')
 # someshit = ['dingus', 'crap', 555]
 # print(handler.load())
@@ -84,3 +140,5 @@ main()
 # print(handler.load())
 # handler.clear()
 # print(handler.load())
+
+main()
