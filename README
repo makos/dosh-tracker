@@ -1,5 +1,7 @@
 Dosh Tracker
 
+WIP
+
 A tool that allows you to record and track your spendings.
 Requires Python 3.x, no other modules required.
 See LICENSE for licensing.
@@ -9,16 +11,8 @@ GUI is to come, hopefully.
 
 Config file:
 when running for first time, '.config' file is created in parent directory.
-It contains two variables - 'step' and 'calc_ratios'.
-'step' sets the step used for entry view feature, and is expressed in seconds.
-Handy cheatsheet:
-31 days in seconds = 2678400
-7 days in seconds = 604800
-1 day in seconds = 86400
+It's a JSON file that contains two settings - 'step' and 'calc_ratios'.
 
-'calc_ratios' defines the ratios used by savings calculator feature.
-It's a set of three floats that should sum up to 1.0.
-Any combination is allowed as long as it sums up to 1.0.
-First float is the ratio of living expenses, second one is savings and third one is for luxury items.
-You can use your own config files or edit the default one.
-See './main.py -h' for details.
+They can be edited via the Options feature from the program.
+
+You can use your own config files, see './main.py -h' for details.
