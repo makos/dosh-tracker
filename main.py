@@ -83,7 +83,6 @@ def set_options():
     # a better way to do this but I still need to come up with it
     global DEFAULTS, CONFIG, STEP, CALC_RATIOS
     cfg_handler = JSONHandler(CONFIG)
-    print("opening", CONFIG, "in handler")
     print("\nAvailable settings:")
     option = input("Step - decides what range is used to display entries - can be (1), (7) or (31) days > ")
     if option == '1':

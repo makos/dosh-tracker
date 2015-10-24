@@ -24,33 +24,37 @@ class JSONHandler():
 
     def load(self):
         try:
-            json_file = open(self.db, 'r')
-            JSONHandler.json_data = json.load(json_file)
-            json_file.close()
-            return JSONHandler.json_data
+            with open(self.db, 'r') as json_file:
+            # json_file = open(self.db, 'r')
+                self.json_data = json.load(json_file)
+                json_file.close()
+            return self.json_data
         except FileNotFoundError:
             print("JSONHandler: No JSON file with name", self.db, "found.") # this should be remade so the file is
             return None                                                     # generated automatically - easy, but won't
                                                                             # it break parts of code in main that use it?
     def dump(self, data):
-        JSONHandler.json_data.append(data)
-        json_file = open(self.db, 'w')
-        json.dump(JSONHandler.json_data, json_file, indent = 4)
-        json_file.close()
-        #print("JSONHandler: Data dumped into", str(self.db))
+        self.json_data.append(data)
+        with open(self.db, 'w') as json_file:
+        # json_file = open(self.db, 'w')
+            json.dump(self.json_data, json_file, indent = 4)
+            json_file.close()
+        print("JSONHandler: Data dumped into", str(self.db))
 
     def clear(self, prompt = True):
         if prompt:
             option = input("JSONHandler: Database wipe - do you really want to do this? y/n ")
             if option == 'y':
-                JSONHandler.json_data = []
-                json_file = open(self.db, 'w')
-                json.dump(JSONHandler.json_data, json_file)
-                json_file.close()
+                self.json_data = []
+                with open(self.db, 'w') as json_file:
+                # json_file = open(self.db, 'w')
+                    json.dump(self.json_data, json_file)
+                    json_file.close()
                 print("JSONHandler: Database erased")
         else:
-            JSONHandler.json_data = []
-            json_file = open(self.db, 'w')
-            json.dump(JSONHandler.json_data, json_file)
-            json_file.close()
+            self.json_data = []
+            # json_file = open(self.db, 'w')
+            with open(self.db, 'w') as json_file:
+                json.dump(self.json_data, json_file)
+                json_file.close()
             print("JSONHandler: Database erased")
