@@ -4,7 +4,8 @@ A tool that allows you to record and track your spendings.
 Requires Python 3.x, no other modules required.
 See LICENSE for licensing.
 
-For easier usage, make 'main.py' executable (`chmod +x main.py`) and do `./main.py`.
+For easier usage on Linux, make 'main.py' executable (`chmod +x main.py`) and do `./main.py`.
+GUI is to come, hopefully.
 
 Config file:
 when running for first time, '.config' file is created in parent directory.
